@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import static com.alayon.springsecuritydemo.security.ApplicationUserRole.*;
+
 @Configuration
 @EnableWebSecurity
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -27,8 +29,8 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/api/v1/students") //This is the white list for access resources
-                .permitAll()
+                .antMatchers("/api/v1/students") .permitAll() //This is the white list for access resources
+                .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -42,19 +44,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails student1 = User.builder()
                                 .username("jalayon")
                                 .password(passwordEncoder.encode("password"))
-                                .roles("STUDENT") //ROLE_STUDENT. This is how spring understand this role.
+                                .roles(STUDENT.name()) //ROLE_STUDENT. This is how spring understand this role.
                                 .build();
 
         UserDetails student2 = User.builder()
                 .username("majones")
                 .password(passwordEncoder.encode("password"))
-                .roles("STUDENT")
+                .roles(ADMIN.name())
                 .build();
 
         UserDetails student3 = User.builder()
                 .username("anasmith")
                 .password(passwordEncoder.encode("password"))
-                .roles("STUDENT")
+                .roles(STUDENT.name())
                 .build();
 
         return new InMemoryUserDetailsManager(
